@@ -1,9 +1,12 @@
 import pandas as pd
 import random
 import numpy as np
+import sklearn as sk
+import sklearn.cluster
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 import math
+import matplotlib.pyplot as plt
 
 data = pd.read_csv("preprocessed.csv")
 
@@ -237,69 +240,69 @@ EQUAL WIDTHS: Uncomment to run model with 10 classification bins
 '''
 EQUAL PROPORTIONS: Uncomment to run model with 13 classification bins
 '''
-# #Train data
-# train_bin1 = train[train["popularity"] < 6].copy()
-# train_bin2 = train[(train["popularity"] >= 6) & (train["popularity"] < 13)].copy()
-# train_bin3 = train[(train["popularity"] >= 13) & (train["popularity"] < 20)].copy()
-# train_bin4 = train[(train["popularity"] >= 20) & (train["popularity"] < 38)].copy()
-# train_bin5 = train[(train["popularity"] >= 38) & (train["popularity"] < 54)].copy()
-# train_bin6 = train[(train["popularity"] >= 54) & (train["popularity"] < 60)].copy()
-# train_bin7 = train[(train["popularity"] >= 60) & (train["popularity"] < 64)].copy()
-# train_bin8 = train[(train["popularity"] >= 64) & (train["popularity"] < 67)].copy()
-# train_bin9 = train[(train["popularity"] >= 67) & (train["popularity"] < 70)].copy()
-# train_bin10 = train[(train["popularity"] >= 70) & (train["popularity"] < 74)].copy()
-# train_bin11 = train[(train["popularity"] >= 74) & (train["popularity"] < 77)].copy()
-# train_bin12 = train[(train["popularity"] >= 77) & (train["popularity"] < 81)].copy()
-# train_bin13 = train[train["popularity"] >= 81].copy()
-#
-# # Validation data
-# val_bin1 = val[val["popularity"] < 6].copy()
-# val_bin2 = val[(val["popularity"] >= 6) & (val["popularity"] < 13)].copy()
-# val_bin3 = val[(val["popularity"] >= 13) & (val["popularity"] < 20)].copy()
-# val_bin4 = val[(val["popularity"] >= 20) & (val["popularity"] < 38)].copy()
-# val_bin5 = val[(val["popularity"] >= 38) & (val["popularity"] < 54)].copy()
-# val_bin6 = val[(val["popularity"] >= 54) & (val["popularity"] < 60)].copy()
-# val_bin7 = val[(val["popularity"] >= 60) & (val["popularity"] < 64)].copy()
-# val_bin8 = val[(val["popularity"] >= 64) & (val["popularity"] < 67)].copy()
-# val_bin9 = val[(val["popularity"] >= 67) & (val["popularity"] < 70)].copy()
-# val_bin10 = val[(val["popularity"] >= 70) & (val["popularity"] < 74)].copy()
-# val_bin11 = val[(val["popularity"] >= 74) & (val["popularity"] < 77)].copy()
-# val_bin12 = val[(val["popularity"] >= 77) & (val["popularity"] < 81)].copy()
-# val_bin13 = val[val["popularity"] >= 81].copy()
-#
-# # Test data
-# test_bin1 = test[test["popularity"] < 6].copy()
-# test_bin2 = test[(test["popularity"] >= 6) & (test["popularity"] < 13)].copy()
-# test_bin3 = test[(test["popularity"] >= 13) & (test["popularity"] < 20)].copy()
-# test_bin4 = test[(test["popularity"] >= 20) & (test["popularity"] < 38)].copy()
-# test_bin5 = test[(test["popularity"] >= 38) & (test["popularity"] < 54)].copy()
-# test_bin6 = test[(test["popularity"] >= 54) & (test["popularity"] < 60)].copy()
-# test_bin7 = test[(test["popularity"] >= 60) & (test["popularity"] < 64)].copy()
-# test_bin8 = test[(test["popularity"] >= 64) & (test["popularity"] < 67)].copy()
-# test_bin9 = test[(test["popularity"] >= 67) & (test["popularity"] < 70)].copy()
-# test_bin10 = test[(test["popularity"] >= 70) & (test["popularity"] < 74)].copy()
-# test_bin11 = test[(test["popularity"] >= 74) & (test["popularity"] < 77)].copy()
-# test_bin12 = test[(test["popularity"] >= 77) & (test["popularity"] < 81)].copy()
-# test_bin13 = test[test["popularity"] >= 81].copy()
-#
-# # Modifying popularity values to reflect classes
-# train_bin1["popularity"], test_bin1["popularity"], val_bin1["popularity"] = 1, 1, 1
-# train_bin2["popularity"], test_bin2["popularity"], val_bin2["popularity"] = 2, 2, 2
-# train_bin3["popularity"], test_bin3["popularity"], val_bin3["popularity"] = 3, 3, 3
-# train_bin4["popularity"], test_bin4["popularity"], val_bin4["popularity"] = 4, 4, 4
-# train_bin5["popularity"], test_bin5["popularity"], val_bin5["popularity"] = 5, 5, 5
-# train_bin6["popularity"], test_bin6["popularity"], val_bin6["popularity"] = 6, 6, 6
-# train_bin7["popularity"], test_bin7["popularity"], val_bin7["popularity"] = 7, 7, 7
-# train_bin8["popularity"], test_bin8["popularity"], val_bin8["popularity"] = 8, 8, 8
-# train_bin9["popularity"], test_bin9["popularity"], val_bin9["popularity"] = 9, 9, 9
-# train_bin10["popularity"], test_bin10["popularity"], val_bin10["popularity"] = 10, 10, 10
-# train_bin11["popularity"], test_bin11["popularity"], val_bin11["popularity"] = 11, 11, 11
-# train_bin12["popularity"], test_bin12["popularity"], val_bin12["popularity"] = 12, 12, 12
-# train_bin13["popularity"], test_bin13["popularity"], val_bin13["popularity"] = 13, 13, 13
-#
-# train_ready = pd.concat([train_bin1, train_bin2, train_bin3, train_bin4, train_bin5, train_bin6, train_bin7, train_bin8, train_bin9, train_bin10, train_bin11, train_bin12, train_bin13])
-# test_ready = pd.concat([test_bin1, test_bin2, test_bin3, test_bin4, test_bin5, test_bin6, test_bin7, test_bin8, test_bin9, test_bin10, test_bin11, test_bin12, test_bin13])
-# val_ready = pd.concat([val_bin1, val_bin2, val_bin3, val_bin4, val_bin5, val_bin6, val_bin7, val_bin8, val_bin9, val_bin10, val_bin11, val_bin12, val_bin13])
+#Train data
+train_bin1 = train[train["popularity"] < 6].copy()
+train_bin2 = train[(train["popularity"] >= 6) & (train["popularity"] < 13)].copy()
+train_bin3 = train[(train["popularity"] >= 13) & (train["popularity"] < 20)].copy()
+train_bin4 = train[(train["popularity"] >= 20) & (train["popularity"] < 38)].copy()
+train_bin5 = train[(train["popularity"] >= 38) & (train["popularity"] < 54)].copy()
+train_bin6 = train[(train["popularity"] >= 54) & (train["popularity"] < 60)].copy()
+train_bin7 = train[(train["popularity"] >= 60) & (train["popularity"] < 64)].copy()
+train_bin8 = train[(train["popularity"] >= 64) & (train["popularity"] < 67)].copy()
+train_bin9 = train[(train["popularity"] >= 67) & (train["popularity"] < 70)].copy()
+train_bin10 = train[(train["popularity"] >= 70) & (train["popularity"] < 74)].copy()
+train_bin11 = train[(train["popularity"] >= 74) & (train["popularity"] < 77)].copy()
+train_bin12 = train[(train["popularity"] >= 77) & (train["popularity"] < 81)].copy()
+train_bin13 = train[train["popularity"] >= 81].copy()
+
+# Validation data
+val_bin1 = val[val["popularity"] < 6].copy()
+val_bin2 = val[(val["popularity"] >= 6) & (val["popularity"] < 13)].copy()
+val_bin3 = val[(val["popularity"] >= 13) & (val["popularity"] < 20)].copy()
+val_bin4 = val[(val["popularity"] >= 20) & (val["popularity"] < 38)].copy()
+val_bin5 = val[(val["popularity"] >= 38) & (val["popularity"] < 54)].copy()
+val_bin6 = val[(val["popularity"] >= 54) & (val["popularity"] < 60)].copy()
+val_bin7 = val[(val["popularity"] >= 60) & (val["popularity"] < 64)].copy()
+val_bin8 = val[(val["popularity"] >= 64) & (val["popularity"] < 67)].copy()
+val_bin9 = val[(val["popularity"] >= 67) & (val["popularity"] < 70)].copy()
+val_bin10 = val[(val["popularity"] >= 70) & (val["popularity"] < 74)].copy()
+val_bin11 = val[(val["popularity"] >= 74) & (val["popularity"] < 77)].copy()
+val_bin12 = val[(val["popularity"] >= 77) & (val["popularity"] < 81)].copy()
+val_bin13 = val[val["popularity"] >= 81].copy()
+
+# Test data
+test_bin1 = test[test["popularity"] < 6].copy()
+test_bin2 = test[(test["popularity"] >= 6) & (test["popularity"] < 13)].copy()
+test_bin3 = test[(test["popularity"] >= 13) & (test["popularity"] < 20)].copy()
+test_bin4 = test[(test["popularity"] >= 20) & (test["popularity"] < 38)].copy()
+test_bin5 = test[(test["popularity"] >= 38) & (test["popularity"] < 54)].copy()
+test_bin6 = test[(test["popularity"] >= 54) & (test["popularity"] < 60)].copy()
+test_bin7 = test[(test["popularity"] >= 60) & (test["popularity"] < 64)].copy()
+test_bin8 = test[(test["popularity"] >= 64) & (test["popularity"] < 67)].copy()
+test_bin9 = test[(test["popularity"] >= 67) & (test["popularity"] < 70)].copy()
+test_bin10 = test[(test["popularity"] >= 70) & (test["popularity"] < 74)].copy()
+test_bin11 = test[(test["popularity"] >= 74) & (test["popularity"] < 77)].copy()
+test_bin12 = test[(test["popularity"] >= 77) & (test["popularity"] < 81)].copy()
+test_bin13 = test[test["popularity"] >= 81].copy()
+
+# Modifying popularity values to reflect classes
+train_bin1["popularity"], test_bin1["popularity"], val_bin1["popularity"] = 1, 1, 1
+train_bin2["popularity"], test_bin2["popularity"], val_bin2["popularity"] = 2, 2, 2
+train_bin3["popularity"], test_bin3["popularity"], val_bin3["popularity"] = 3, 3, 3
+train_bin4["popularity"], test_bin4["popularity"], val_bin4["popularity"] = 4, 4, 4
+train_bin5["popularity"], test_bin5["popularity"], val_bin5["popularity"] = 5, 5, 5
+train_bin6["popularity"], test_bin6["popularity"], val_bin6["popularity"] = 6, 6, 6
+train_bin7["popularity"], test_bin7["popularity"], val_bin7["popularity"] = 7, 7, 7
+train_bin8["popularity"], test_bin8["popularity"], val_bin8["popularity"] = 8, 8, 8
+train_bin9["popularity"], test_bin9["popularity"], val_bin9["popularity"] = 9, 9, 9
+train_bin10["popularity"], test_bin10["popularity"], val_bin10["popularity"] = 10, 10, 10
+train_bin11["popularity"], test_bin11["popularity"], val_bin11["popularity"] = 11, 11, 11
+train_bin12["popularity"], test_bin12["popularity"], val_bin12["popularity"] = 12, 12, 12
+train_bin13["popularity"], test_bin13["popularity"], val_bin13["popularity"] = 13, 13, 13
+
+train_ready = pd.concat([train_bin1, train_bin2, train_bin3, train_bin4, train_bin5, train_bin6, train_bin7, train_bin8, train_bin9, train_bin10, train_bin11, train_bin12, train_bin13])
+test_ready = pd.concat([test_bin1, test_bin2, test_bin3, test_bin4, test_bin5, test_bin6, test_bin7, test_bin8, test_bin9, test_bin10, test_bin11, test_bin12, test_bin13])
+val_ready = pd.concat([val_bin1, val_bin2, val_bin3, val_bin4, val_bin5, val_bin6, val_bin7, val_bin8, val_bin9, val_bin10, val_bin11, val_bin12, val_bin13])
 
 
 '''
@@ -336,8 +339,8 @@ EQUAL WIDTHS: Uncomment to run model with 13 classification bins
 # val_bin13 = val[(val["popularity"] >= 92) & (val["popularity"] <= 100)].copy()
 #
 # # Test data
-# test_bin1 = test[test["popularity"] < 8].copy()
-# test_bin2 = test[(test["popularity"] >= 7) & (test["popularity"] < 13)].copy()
+# test_bin1 = test[test["popularity"] < 6].copy()
+# test_bin2 = test[(test["popularity"] >= 6) & (test["popularity"] < 13)].copy()
 # test_bin3 = test[(test["popularity"] >= 13) & (test["popularity"] < 20)].copy()
 # test_bin4 = test[(test["popularity"] >= 20) & (test["popularity"] < 28)].copy()
 # test_bin5 = test[(test["popularity"] >= 28) & (test["popularity"] < 35)].copy()
@@ -450,18 +453,131 @@ EQUAL WIDTHS: Uncomment to run model with 16 classification bins
 #Translate to numpy array to pass to sklearn
 
 
-X_train = train_ready.loc[:, train_ready.columns != "popularity"].values
-Y_train = train_ready.loc[:, train_ready.columns == "popularity"].values
+def collapse(cm):
+    '''
+    Make all consufiosn matrices 2x2 to show total false positives etc.
+    :param confusion matrix, np array
+    :return: collapsed np array
+    '''
+    TP = np.diag(cm).sum()
+    TN = np.sum(cm) - np.sum(cm[1, :]) - np.sum(cm[:, 1]) - np.diag(cm)[1]  # TN = total - FP - FN +TP
+    FP = np.sum(cm[1, :]) - np.diag(cm)[1]  # Sum of elements in row 1 (actual negative class), excluding TP
+    FN = np.sum(cm[:, 1]) - np.diag(cm)[1]  # Sum of elements in column 1 (predicted negative class), excluding TP
 
-X_val = val_ready.loc[:, val_ready.columns != "popularity"].values
-Y_val = val_ready.loc[:, val_ready.columns == "popularity"].values
 
-# Build and run model
-model_test1 = RandomForestClassifier(random_state=17)
-model_test1.fit(X_train, Y_train.ravel())
-result = np.array(model_test1.predict(X_val))
+    TP, TN, FP, FN = float(TP), float(TN), float(FP), float(FN)
 
-# Display number of incorrectly predicted classes from validation set
-print('Number of incorrectly classified songs:', sum(Y_val.ravel() != result))
-differences = (Y_val.ravel()[np.where(Y_val.ravel() != result)]-result[np.where(Y_val.ravel() != result)])**2
-print('Average difference in class for incorrectly classified songs:', math.sqrt(sum(differences)/sum(Y_val.ravel() != result)))
+    collapsed_cm = np.array([[TP, FN], [FP, TN]])
+    return collapsed_cm
+
+
+def class_finder(train, val):
+    '''
+
+    :param train: pandas dataframe of traning data
+    :param val: pandas dataframe of validatiion data
+    :return:
+    '''
+
+    popularity_train = train.loc[:, train.columns == "popularity"].values
+    popularity_val = val.loc[:, val.columns == "popularity"]
+    X_train = train.loc[:, train.columns != "popularity"].values
+
+    X_val = val.loc[:, val.columns != "popularity"].values
+
+
+    '''
+    Creating 3 random forest models (constant bin width, constant bin population, kmeans binning) for each number
+    of classes in below list.
+    '''
+    for i in [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]:
+        splitter1 = sklearn.preprocessing.KBinsDiscretizer(subsample = 200000, n_bins=i, random_state=17, encode= 'ordinal', strategy = 'quantile')
+        splitter2 = sklearn.preprocessing.KBinsDiscretizer(subsample = 200000, n_bins=i, random_state=17, encode= 'ordinal', strategy = 'uniform')
+        splitter3 = sklearn.preprocessing.KBinsDiscretizer(subsample = 200000, n_bins=i, random_state=17, encode= 'ordinal', strategy = 'kmeans')
+        frequency = splitter1.fit(popularity_train)
+        width = splitter2.fit(popularity_train)
+        kmeans = splitter3.fit(popularity_train)
+        train_bins1 = frequency.transform(train.loc[:, train.columns == "popularity"].values)
+        train_bins2 = width.transform(train.loc[:, train.columns == "popularity"].values)
+        train_bins3 = kmeans.transform(train.loc[:, train.columns == "popularity"].values)
+
+        model_test1 = RandomForestClassifier(random_state=17)
+        model_test1.fit(X_train, train_bins1.ravel())
+        validation_result1 = np.array(model_test1.predict(X_val))
+
+        val_bins1 = frequency.transform(val.loc[:, val.columns == "popularity"].values)
+
+        #confusion matrix 1
+        mat1 = sk.metrics.confusion_matrix(val_bins1, validation_result1)
+
+        model_test2 = RandomForestClassifier(random_state=17)
+        model_test2.fit(X_train, train_bins2.ravel())
+        validation_result2 = np.array(model_test2.predict(X_val))
+
+        val_bins2 = width.transform(val.loc[:, val.columns == "popularity"].values)
+
+        #confusion matrix 2
+        mat2 = sk.metrics.confusion_matrix(val_bins2, validation_result2)
+
+
+
+        model_test3 = RandomForestClassifier(random_state=17)
+        model_test3.fit(X_train, train_bins3.ravel())
+        validation_result3 = np.array(model_test3.predict(X_val))
+
+        val_bins3 = kmeans.transform(val.loc[:, val.columns == "popularity"].values)
+
+        #confusion matrix 3
+        mat3 = sk.metrics.confusion_matrix(val_bins3, validation_result3)
+
+
+        '''
+        Trying to use cohen's kappa measurement (didn't turn out useful)
+        '''
+        # Pe1, Pe2, Pe3 = 0, 0, 0
+        # for p in range(i):
+        #     Pe1 += (sum(val_bins1 == p)*sum(validation_result1 == p))
+        #     Pe2+= (sum(val_bins2 == p) * sum(validation_result2 == p))
+        #     Pe3 += (sum(val_bins3 == p) * sum(validation_result3 == p))
+        # Pe1 = Pe1 * ((1 / val.shape[0]) ** 2)
+        # Pe2 = Pe2 * ((1 / val.shape[0]) ** 2)
+        # Pe3 = Pe3 * ((1 / val.shape[0]) ** 2)
+        #
+        # Po1 = np.trace(mat1)/val.shape[0]
+        # Po2 = np.trace(mat2)/val.shape[0]
+        # Po3 = np.trace(mat3)/val.shape[0]
+        #
+        # print(f"{i} equal frequency bins:")
+        # print((Po1-Pe1)/(1-Pe1))
+        # print(f"{i} equal width bins:")
+        # print(np.trace(mat2))
+        # print((Po2-Pe2)/(1-Pe2))
+        # print(f"{i} kmeans bins:")
+        # print((Po3-Pe3)/(1-Pe3))
+        # print("\n \n \n")
+
+
+class_finder(train, val)
+
+
+
+'''
+code for implementing manually constructed classes
+'''
+# X_train = train_ready.loc[:, train_ready.columns != "popularity"].values
+# Y_train = train_ready.loc[:, train_ready.columns == "popularity"].values
+#
+# X_val = val_ready.loc[:, val_ready.columns != "popularity"].values
+# Y_val = val_ready.loc[:, val_ready.columns == "popularity"].values
+# print(Y_val)
+#
+# # Build and run model
+# model_test1 = RandomForestClassifier(random_state=17)
+# model_test1.fit(X_train, Y_train.ravel())
+# result = np.array(model_test1.predict(X_val))
+#
+# # Display number of incorrectly predicted classes from validation set
+# print('Number of incorrectly classified songs:', sum(Y_val.ravel() != result))
+# differences = (Y_val.ravel()[np.where(Y_val.ravel() != result)]-result[np.where(Y_val.ravel() != result)])**2
+# print('Average difference in class for incorrectly classified songs:', math.sqrt(sum(differences)/sum(Y_val.ravel() != result)))
+#
