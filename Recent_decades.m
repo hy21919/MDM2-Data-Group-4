@@ -1,0 +1,87 @@
+Data = readtable("spotify_dataset.xlsx");
+Data.Properties.VariableNames;
+subset13 = Data.releaseDate;
+subset13 = datetime(subset13, 'InputFormat', 'dd-MMM-yyyy');
+years = year(subset13);
+% Find the rows where the year is not 2022
+rowsToKeep = years ~= 2022;
+Data = Data(rowsToKeep, :);
+subset11 = Data(:, {'decade'});
+
+
+subset11 = table2array(subset11);
+% Convert decades to integers using if-elseif
+for i = 1:numel(subset11)
+   if subset11{i} == '2020-2029'
+       subset11{i} = 12;
+   elseif subset11{i} == '2010-2019'
+       subset11{i} = 11;
+   elseif subset11{i} == '2000-2009'
+       subset11{i} = 10;
+   elseif subset11{i} == '1990-1999'
+       subset11{i} = 9;
+   elseif subset11{i} == '1980-1989'
+       subset11{i} = 8;
+   elseif subset11{i} == '1970-1979'
+       subset11{i} = 7;
+   elseif subset11{i} == '1960-1969'
+       subset11{i} = 6;
+   elseif subset11{i} == '1950-1959'
+       subset11{i} = 5;
+   elseif subset11{i} == '1940-1949'
+       subset11{i} = 4;
+   elseif subset11{i} == '1930-1939'
+       subset11{i} = 3;
+   elseif subset11{i} == '1920-1929'
+       subset11{i} = 2;
+   elseif subset11{i} == '1910-1919'
+       subset11{i} = 1;
+   elseif subset11{i} == '1900-1909'
+       subset11{i} = 0;
+   end
+end
+subset18 = cell2mat(subset11) >= 11;
+Data = Data(subset18, :);
+Data.explicit = double(Data.explicit);
+Data = Data(Data.speechiness < 0.66, :);
+result  = Data(:, 'popularity');
+Y1 = table2array(result);
+
+subset12 = Data(:, {'explicit', 'songLength_ms_', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key','liveness','loudness','speechiness','tempo','timeSignature', 'mode', 'valence'});
+subset12 = table2array(subset12);
+X1 = subset12;
+X1 = X1(~any(isnan(X1), 2), :);
+Y1 = Y1(~any(isnan(X1), 2), :);
+size(Y1);
+variableNames = Data.Properties.VariableNames;
+scatter(X1(:,1), Y1)
+%disp(Data)
+% x = subset18;
+% y = Data.popularity;
+% 
+% % Create a scatter plot
+% figure;
+% scatter(x, y, 'filled');
+% 
+% % Add labels and title
+% xlabel('decade');
+% ylabel('popularity');
+% title('Corrected scatter plot of Decade vs. Popularity');
+csv = [X1 Y1];
+T=array2table(csv, 'VariableNames', {'explicit', 'songLength_ms_', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'loudness', 'speechiness', 'tempo', 'timeSignature', 'mode', 'valence', 'popularity'});
+writetable(T, 'recentpreprocessed.csv');
+figure;
+plot(csv(:,1), csv())
+hold on
+figure
+histogram(Y1)
+xline(8, '-m');
+xline(16, '-m')
+xline(31, '-m')
+xline(54, '-m')
+xline(61, '-m')
+xline(66, '-m')
+xline(70, '-m')
+xline(75, '-m')
+xline(79, '-m')
+hold off
