@@ -4,9 +4,11 @@ from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import accuracy_score, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Load data
-data = pd.read_csv('preprocessed.csv')
+data = pd.read_csv('recentpreprocessed.csv')
 
 # Split data into train, validation, test sets
 train, proto_test = train_test_split(data, train_size=0.6, shuffle=True, random_state=42)
@@ -162,3 +164,14 @@ print(f'Test Accuracy: {accuracy_test}')
 print("Validation Confusion Matrix:\n", confusion_matrix_val)
 print("Test Confusion Matrix:\n", confusion_matrix_test)
 
+def plot_confusion_matrix(cm, title):
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=True, fmt="d", linewidths=.5, cmap="Blues", cbar=False)
+    plt.xlabel('Predicted Label')
+    plt.ylabel('True Label')
+    plt.title(title)
+    plt.show()
+
+# Plot confusion matrix for validation and test data
+plot_confusion_matrix(confusion_matrix_val, 'Validation Confusion Matrix')
+plot_confusion_matrix(confusion_matrix_test, 'Test Confusion Matrix')
