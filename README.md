@@ -24,10 +24,9 @@ The following is a list of the relevant files to understanding the process under
 
    MATLAB file used to preprocess file (1.) and output file (3.).
 
-6. main.py
+6. main2.py
 
-   python script used to build, validate and test models and to produce figrues. This is an earlier version of file (7.) and will plot some of the 
-   figures used for validation.
+   Python script used to build, validate and test models and to produce figrues. This is an earlier version of file (7.) and will plot some of the figures used for validation.
 
 7. main_results.py
 
