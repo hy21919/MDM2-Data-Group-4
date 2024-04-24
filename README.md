@@ -18,7 +18,7 @@ The following is a list of the relevant files to understanding the process under
 
 5. Preprocessingfile
 
-  MATLAB file used to preprocess file (1.) and output file (2.).
+   MATLAB file used to preprocess file (1.) and output file (2.).
 
 5. Recent_decades.m
 
@@ -26,8 +26,8 @@ The following is a list of the relevant files to understanding the process under
 
 6. main.py
 
-  python script used to build, validate and test models and to produce figrues. This is an earlier version of file (7.) and will plot some of the 
-  figures used for validation.
+   python script used to build, validate and test models and to produce figrues. This is an earlier version of file (7.) and will plot some of the 
+   figures used for validation.
 
 7. main_results.py
 
