@@ -20,8 +20,8 @@ from sklearn.model_selection import cross_val_score
 import math
 import matplotlib.pyplot as plt
 
-data = pd.read_csv("preprocessed.csv") #total data set
-#data = pd.read_csv("recentpreprocessed.csv") #two most recent decades, uncomment to get feature importance plot without decade.
+#data = pd.read_csv("preprocessed.csv") #total data set
+data = pd.read_csv("recentpreprocessed.csv") #two most recent decades, uncomment to get feature importance plot without decade.
 
 train_ratio = 0.6
 validation_ratio = 0.2
@@ -360,6 +360,19 @@ def class_finder(train, val, test):
         print(" \n Confusion matrix for Forest: \n", matrf)
         print("Accuracy for Random Forest:", accuracy_rf)
         # Print accuracy for each model
+
+        for p in range(14):
+            features, feature_names = [(p,)], ['explicit', 'Song Length', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key','liveness','loudness','speechiness','tempo','timeSignature', 'mode', 'valence']
+            partial_results = partial_dependence(GBM_model_tuned, X_test, features, method='brute')
+            deciles = {0: np.linspace(0, 1, num=5)}
+
+            display = PartialDependenceDisplay([partial_results], features=features, feature_names=feature_names,
+                                               target_idx=0, deciles=deciles)
+            display.plot()
+            plt.savefig(f"New_{feature_names[p]}_{i}")
+            plt.show()
+
+
 
 
 
