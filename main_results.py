@@ -7,8 +7,11 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import make_hastie_10_2
+from sklearn.inspection import PartialDependenceDisplay
 from sklearn.linear_model import SGDClassifier
 from sklearn.pipeline import make_pipeline
+from sklearn.inspection import partial_dependence
 from sklearn.model_selection import RandomizedSearchCV
 from skopt import BayesSearchCV
 from skopt.space import Real, Categorical, Integer
@@ -17,7 +20,8 @@ from sklearn.model_selection import cross_val_score
 import math
 import matplotlib.pyplot as plt
 
-data = pd.read_csv("preprocessed.csv")
+data = pd.read_csv("preprocessed.csv") #total data set
+#data = pd.read_csv("recentpreprocessed.csv") #two most recent decades, uncomment to get feature importance plot without decade.
 
 train_ratio = 0.6
 validation_ratio = 0.2
@@ -46,6 +50,17 @@ val, test = train_test_split(proto_test, test_size=test_ratio/(test_ratio + vali
 # accuracies_freq_lin =[]
 # accuracies_kmeans_lin = []
 
+def calculate_accuracy(confusion_matrix):
+    # Calculate total correct predictions
+    total_correct = np.sum(np.diag(confusion_matrix))
+
+    # Calculate total predictions
+    total_predictions = np.sum(confusion_matrix)
+
+    # Calculate accuracy
+    accuracy = total_correct / total_predictions
+
+    return accuracy
 
 def class_finder(train, val, test):
     '''
@@ -198,7 +213,7 @@ def class_finder(train, val, test):
         #     'gamma': ['scale', 'auto', 0.1, 1.0],
         #     'degree': [2, 3, 4],
         #     'bootstrap': [True, False]
-        # }
+        # } #polynomial kernel was also tested but the loop ran too slowly if all three kernel types were tested at once
         #
         #
         # # Define the search space for GradientBoostingClassifier
@@ -299,11 +314,11 @@ def class_finder(train, val, test):
         train_bins_final = np.vstack((train_bins_final, val_bins_final))
 
 
-        SVM_model_tuned = make_pipeline(StandardScaler(), SVC(C=1, kernel='linear', degree=2, decision_function_shape='ovr'))
+        SVM_model_tuned = make_pipeline(StandardScaler(), SVC(C=1, kernel='linear', decision_function_shape='ovr'))
 
         GBM_model_tuned = GradientBoostingClassifier(learning_rate = 0.020871588778809444, max_depth = 8, max_features = 'log2', min_samples_leaf = 13, min_samples_split = 13, n_estimators = 123)
 
-        RF_model_tuned = RandomForestClassifier(bootstrap = True, max_depth=  8, max_features = None, min_samples_leaf = 4, min_samples_split = 14, n_estimators = 89)
+        RF_model_tuned = RandomForestClassifier(bootstrap = True, max_depth =  8, max_features = None, min_samples_leaf = 4, min_samples_split = 14, n_estimators = 89)
 
         SVM_model_tuned.fit(X_train_final, train_bins_final.ravel())
         GBM_model_tuned.fit(X_train_final, train_bins_final.ravel())
@@ -319,10 +334,32 @@ def class_finder(train, val, test):
         matgbm = sk.metrics.confusion_matrix(GBMfinal, test_bins_final.ravel())
         matrf = sk.metrics.confusion_matrix(RFfinal, test_bins_final.ravel())
 
+
+
+        # Calculate accuracy for each confusion matrix
+        accuracy_svm = calculate_accuracy(matsvm)
+        accuracy_gbm = calculate_accuracy(matgbm)
+        accuracy_rf = calculate_accuracy(matrf)
+
+        importances = GBM_model_tuned.feature_importances_
+
+        plt.bar(range(len(importances)), importances)
+        plt.xlabel('Feature Number')
+        plt.ylabel('Importance')
+        plt.title(f"Feature importance with no. bins: {i}")
+        #plt.yscale("log")
+        plt.show()
+
+
+
         print(f"{i} bins:")
         print(" \n Confusion matrix for SVM: \n", matsvm)
+        print("Accuracy for SVM:", accuracy_svm)
         print(" \n Confusion matrix for GBM: \n", matgbm)
+        print("Accuracy for GBM:", accuracy_gbm)
         print(" \n Confusion matrix for Forest: \n", matrf)
+        print("Accuracy for Random Forest:", accuracy_rf)
+        # Print accuracy for each model
 
 
 
@@ -422,5 +459,6 @@ def class_finder(train, val, test):
     # plt.show()
 
 class_finder(train, val, test)
+
 
 
