@@ -31,7 +31,6 @@ The following is a list of the relevant files to understanding the process under
 
 7. main_results.py
 
-   This is similar to file (6.) but uses the final models with tuned hyperparameters to produce results and feature importance plots. There are many   
-   commented sections which contain redundant code but all processes used to finish the project after preprocessing are documented in this script.
+   This is similar to file (6.) but uses the final models with tuned hyperparameters to produce results and feature importance plots. There are many  commented sections which contain redundant code but all processes used to finish the project after preprocessing are documented in this script.
 
    
