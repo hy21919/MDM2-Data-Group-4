@@ -14,12 +14,13 @@ The following is a list of the relevant files to understanding the process under
 
 3. recentpreprocessed.csv
 
+   Data set containing the preprocessed data set from the two most recent decades while omitting the 'decades' variable.
 
-4. Preprocessingfile
+5. Preprocessingfile
 
   MATLAB file used to preprocess file (1.) and output file (2.).
 
-5.. Recent_decades.m
+5. Recent_decades.m
 
    MATLAB file used to preprocess file (1.) and output file (3.).
 
