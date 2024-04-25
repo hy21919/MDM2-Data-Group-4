@@ -341,6 +341,7 @@ def class_finder(train, val, test):
         accuracy_gbm = calculate_accuracy(matgbm)
         accuracy_rf = calculate_accuracy(matrf)
 
+        # Creating feature importance plots.
         importances = GBM_model_tuned.feature_importances_
 
         plt.bar(range(len(importances)), importances)
@@ -361,6 +362,8 @@ def class_finder(train, val, test):
         print("Accuracy for Random Forest:", accuracy_rf)
         # Print accuracy for each model
 
+        
+        #Creating partial dependence plots
         for p in range(14):
             features, feature_names = [(p,)], ['explicit', 'Song Length', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key','liveness','loudness','speechiness','tempo','timeSignature', 'mode', 'valence']
             partial_results = partial_dependence(GBM_model_tuned, X_test, features, method='brute')
