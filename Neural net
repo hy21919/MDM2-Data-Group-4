@@ -1,0 +1,169 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import sklearn as sk
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
+data = pd.read_csv("preprocessed.csv")
+
+train_ratio = 0.6
+validation_ratio = 0.2
+test_ratio = 0.2
+
+# train is now 60% of the entire data set
+train, proto_test= train_test_split(data, test_size=1 - train_ratio, random_state=17)
+
+# test, validation are now 20% of the initial data set
+val, test = train_test_split(proto_test, test_size=test_ratio/(test_ratio + validation_ratio), random_state=17)
+
+
+global hiddenlayersizefreq
+global hiddenlayersizewidth
+global hiddenlayersizekmeans
+global numfreqbins
+global numwidthbins
+global numkmeansbins
+global eqfreqmax
+global eqwidthmax
+global kmeansmax
+global eqfreqacc
+global eqwidthacc
+global kmeansacc
+
+eqfreqacc=[]
+eqwidthacc=[]
+kmeansacc=[]
+
+
+def class_finder(train, val, x):
+    '''
+
+    :param train: pandas dataframe of training data
+    :param val: pandas dataframe of validation data
+    :return:
+    '''
+
+    global eqfreqacc
+    global eqwidthacc
+    global kmeansacc
+    hiddenlayersizefreq = 0
+    hiddenlayersizewidth = 0
+    hiddenlayersizekmeans = 0
+    numfreqbins = 0
+    numwidthbins = 0
+    numkmeansbins = 0
+    eqfreqmax = 0
+    eqwidthmax = 0
+    kmeansmax = 0
+    popularity_train = train.loc[:, train.columns == "popularity"].values
+    popularity_val = val.loc[:, val.columns == "popularity"].values
+    X_train = train.loc[:, train.columns != "popularity"].values
+    X_val = val.loc[:, val.columns != "popularity"].values
+
+    '''
+    Creating 3 binning strategies (constant bin width, constant bin population, kmeans binning) for each number
+    of classes in below list.
+    '''
+    classes =[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+
+    for i in classes:
+
+        splitter1 = sk.preprocessing.KBinsDiscretizer(subsample=200000, n_bins=i, random_state=17, encode='ordinal', strategy='quantile')
+        splitter2 = sk.preprocessing.KBinsDiscretizer(subsample=200000, n_bins=i, random_state=17, encode='ordinal', strategy='uniform')
+        splitter3 = sk.preprocessing.KBinsDiscretizer(subsample=200000, n_bins=i, random_state=17, encode='ordinal', strategy='kmeans')
+        frequency = splitter1.fit(popularity_train)
+        width = splitter2.fit(popularity_train)
+        kmeans = splitter3.fit(popularity_train)
+        train_bins1 = frequency.transform(train.loc[:, train.columns == "popularity"].values)
+        train_bins2 = width.transform(train.loc[:, train.columns == "popularity"].values)
+        train_bins3 = kmeans.transform(train.loc[:, train.columns == "popularity"].values)
+
+        model_test1 = MLPClassifier(hidden_layer_sizes=(x,), max_iter=1000, alpha=0.01,
+                    solver='adam', verbose=0, random_state=42, tol=0.0001)
+        model_test1.fit(X_train, train_bins1.ravel())
+        validation_result1 = np.array(model_test1.predict(X_val))
+
+        val_bins1 = frequency.transform(val.loc[:, val.columns == "popularity"].values)
+
+        # Confusion matrix 1
+        mat1 = sk.metrics.confusion_matrix(val_bins1, validation_result1)
+
+        model_test2 = MLPClassifier(hidden_layer_sizes=(x,), max_iter=1000, alpha=0.01,
+                    solver='adam', verbose=0, random_state=42, tol=0.0001)
+        model_test2.fit(X_train, train_bins2.ravel())
+        validation_result2 = np.array(model_test2.predict(X_val))
+
+        val_bins2 = width.transform(val.loc[:, val.columns == "popularity"].values)
+
+        # Confusion matrix 2
+        mat2 = sk.metrics.confusion_matrix(val_bins2, validation_result2)
+
+        model_test3 = MLPClassifier(hidden_layer_sizes=(x,), max_iter=1000, alpha=0.01,
+                    solver='adam', verbose=0, random_state=42, tol=0.0001)
+        model_test3.fit(X_train, train_bins3.ravel())
+        validation_result3 = np.array(model_test3.predict(X_val))
+
+        val_bins3 = kmeans.transform(val.loc[:, val.columns == "popularity"].values)
+
+        # Confusion matrix 3
+        mat3 = sk.metrics.confusion_matrix(val_bins3, validation_result3)
+
+        # Calculating entropy
+        proportion1 = np.bincount(val_bins1.flatten().astype(int)) / val.shape[0]
+        proportion2 = np.bincount(val_bins2.flatten().astype(int)) / val.shape[0]
+        proportion3 = np.bincount(val_bins3.flatten().astype(int)) / val.shape[0]
+        entropy1 = -1 * np.sum(proportion1 * np.log2(proportion1))
+        entropy2 = -1 * np.sum(proportion2 * np.log2(proportion2))
+        entropy3 = -1 * np.sum(proportion3 * np.log2(proportion3))
+
+        if (np.trace(mat1) - val.shape[0]/i)>eqfreqmax:
+            eqfreqmax=np.trace(mat1) - val.shape[0]/i
+            # numfreqbins=i
+            # hiddenlayersizefreq=x
+
+        if (np.trace(mat2) - val.shape[0]/i)>eqwidthmax:
+            eqwidthmax=np.trace(mat2) - val.shape[0]/i
+            # numwidthbins=i
+            # hiddenlayersizewidth=x
+
+        if (np.trace(mat3) - val.shape[0]/i)>kmeansmax:
+            kmeansmax=np.trace(mat3) - val.shape[0]/i
+            # numkmeansbins=i
+            # hiddenlayersizekmeans=x
+    eqfreqacc.append(eqfreqmax)
+    eqwidthacc.append(eqwidthmax)
+    kmeansacc.append(kmeansmax)
+        # print("True predictions - binomial true predictions and entropy")
+        # print(f"{i} equal frequency bins:")
+        # print(np.trace(mat1) - val.shape[0]/i)
+        # print(entropy1)
+        # print(f"{i} equal width bins:")
+        # print(np.trace(mat2) - val.shape[0]/i)
+        # print(entropy2)
+        # print(f"{i} kmeans bins:")
+        # print(np.trace(mat3) - val.shape[0]/i)
+        # print(entropy3)
+        # print("\n \n \n")
+
+for i in range(1,100,5):
+    class_finder(train,val,i)
+
+x=range(1,100,5)
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(8, 12))
+
+# Plot data on the first subplot
+ax1.plot(x, eqfreqacc, color='blue')
+ax1.set_title('Equal frequency bins')
+
+# Plot data on the second subplot
+ax2.plot(x, eqwidthacc, color='red')
+ax2.set_title('Equal width bins')
+
+# Plot data on the third subplot
+ax3.plot(x, kmeansacc, color='green')
+ax3.set_title('k-Means bins')
+
+# Adjust layout and display the plot
+plt.tight_layout()
+plt.show()
