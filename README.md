@@ -16,7 +16,7 @@ The following is a list of the relevant files to understanding the process under
 
    Data set containing the preprocessed data set from the two most recent decades while omitting the 'decades' variable.
 
-5. Preprocessingfile
+5. Preprocessingfile (.m extension needs to be added upon download)
 
    MATLAB file used to preprocess file (1.) and output file (2.).
 
@@ -32,6 +32,8 @@ The following is a list of the relevant files to understanding the process under
 
    This is similar to file (6.) but uses the final models with tuned hyperparameters to produce results and feature importance plots. There are many  commented sections which contain redundant code but all processes used to finish the project after preprocessing are documented in this script.
 
-8. Neural Network Script TO BE ADDED
+8. NeuralNet (.py extension needs to be added upon download)
+
+   Python script to train and validate the neural network. 
 
    
