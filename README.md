@@ -34,6 +34,10 @@ The following is a list of the relevant files to understanding the process under
 
 8. NeuralNet (.py extension needs to be added upon download)
 
-   Python script to train and validate the neural network. 
+   Python script to train and validate the neural network.
+
+9. Group4_Spotifysongspopularity_TechNote_pdf.pdf
+
+    A document containing some techncical information not included in the presentation.
 
    
