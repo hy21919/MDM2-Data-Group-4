@@ -38,6 +38,6 @@ The following is a list of the relevant files to understanding the process under
 
 9. Group4_Spotifysongspopularity_TechNote_pdf.pdf
 
-    A document containing some techncical information not included in the presentation.
+    A document containing some techncical information not included in the presentation. (This was uploaded to the Github after the deadline as we had technical issues with our original submission, however this file is identical to that submitted before the deadline)
 
    
